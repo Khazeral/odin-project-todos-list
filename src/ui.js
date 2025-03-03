@@ -1,4 +1,4 @@
-const container = document.querySelector("main")
+const container = document.querySelector("main");
 
 export const createProject = (project) => {
     const node = document.createElement("div");
@@ -20,12 +20,11 @@ export const createProject = (project) => {
     return node;
 };
 
-export const createProjectWorkspace = (project) =>{
-
+export const createProjectWorkspace = (project) => {
     container.innerHTML = ""; 
 
     const header = document.createElement("header");
-    header.className = "header-project"
+    header.id = "header-project";
 
     const colorSquare = document.createElement("div");
     colorSquare.style.backgroundColor = project.color;
@@ -34,16 +33,16 @@ export const createProjectWorkspace = (project) =>{
     projectTitle.textContent = project.title;
 
     const addProjectButton = document.createElement("button");
-    addProjectButton.textContent = "Créer";
+    addProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> Nouveau projet';
 
     header.append(colorSquare, projectTitle, addProjectButton);
     container.append(header);
 
-    // Section d'ajout de tâches
     const taskInputContainer = document.createElement("div");
-    taskInputContainer.className = "task-input-container"
+    taskInputContainer.className = "task-input-container";
 
     const taskInput = document.createElement("input");
+    taskInput.placeholder = "Ajouter une tâche...";
 
     const addTaskButton = document.createElement("button");
     addTaskButton.textContent = "Ajouter";
@@ -52,47 +51,70 @@ export const createProjectWorkspace = (project) =>{
     taskInputContainer.append(taskInput, addTaskButton);
     container.append(taskInputContainer);
 
-    // Container des tâches
-    const tasksContainer = document.createElement("div");
-    tasksContainer.id = "tasks-container";
+    const tasksSection = document.createElement("div");
+    tasksSection.className = "tasks-section";
 
-    container.append(tasksContainer);
+    const tasksToCompleteContainer = document.createElement("div");
+    tasksToCompleteContainer.className = "task-list";
+    tasksToCompleteContainer.innerHTML = `<h2>A compléter (${project.tasks.filter((e) => e.completed === false).length}) </h2>`;
+
+    const completedTasksContainer = document.createElement("div");
+    completedTasksContainer.className = "task-list";
+    completedTasksContainer.innerHTML = `<h2>Terminées (${project.tasks.filter((e) => e.completed === true).length}) </h2>`;
+
+    tasksSection.append(tasksToCompleteContainer, completedTasksContainer);
+    container.append(tasksSection);
+
+    project.tasks.forEach((task) => {
+        createTask(task.title, task.completed, tasksToCompleteContainer, completedTasksContainer);
+    });
 
     addTaskButton.addEventListener("click", () => {
         if (taskInput.value.trim() !== "") {
-            createTask(taskInput.value, tasksContainer);
+            createTask(taskInput.value, false, tasksToCompleteContainer, completedTasksContainer);
             taskInput.value = ""; 
         }
     });
-}
+};
 
-function createTask(title, container) {
+function createTask(title, isCompleted, toCompleteContainer, completedContainer) {
     const task = document.createElement("div");
-    task.className = "task"
+    task.className = "task";
+    if (isCompleted) {
+        task.classList.add("completed");
+    }
 
     const taskTitle = document.createElement("p");
     taskTitle.textContent = title;
 
-    const taskStatus = document.createElement("span");
-    taskStatus.textContent = "✔️";
+    const taskStatus = document.createElement("button");
+    taskStatus.className = "task-status";
+    taskStatus.textContent = isCompleted ? "🔄" : "✔️";
+
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "🗑️";
+    deleteButton.className = "delete-button";
 
     taskStatus.addEventListener("click", () => {
+        task.classList.toggle("completed");
         if (taskStatus.textContent === "✔️") {
-            taskStatus.textContent = "❌";
+            taskStatus.textContent = "🔄";
+            completedContainer.appendChild(task);
         } else {
             taskStatus.textContent = "✔️";
+            toCompleteContainer.appendChild(task);
         }
     });
 
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "X";
-    deleteButton.style.backgroundColor = "#ff4d4d";
-
     deleteButton.addEventListener("click", () => {
-        container.removeChild(task);
+        task.remove();
     });
 
     task.append(taskStatus, taskTitle, deleteButton);
-    container.appendChild(task);
-}
 
+    if (isCompleted) {
+        completedContainer.appendChild(task);
+    } else {
+        toCompleteContainer.appendChild(task);
+    }
+}
