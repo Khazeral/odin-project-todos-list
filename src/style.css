@@ -31,6 +31,50 @@ aside {
   height: 100%;
 }
 
+aside.collapsed {
+  width: 80px;
+  transition: width 0.3s ease-in-out;
+}
+
+aside.collapsed h2,
+aside.collapsed #project-label {
+  display: none;
+}
+
+aside.collapsed header {
+  justify-content: center;
+}
+
+aside.collapsed header button {
+  transform: rotate(180deg);
+}
+
+aside.collapsed #projects-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Réduire la largeur des projets */
+aside.collapsed .project-menu {
+  width: 60px;
+  height: 60px;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+aside.collapsed .project-title,
+aside.collapsed .task-counter {
+  display: none;
+}
+
+aside.collapsed .color-square {
+  width: 30px;
+  height: 30px;
+}
+
 aside > header {
   display: flex;
   justify-content: space-between;
@@ -134,14 +178,14 @@ main {
 }
 
 #header-project > div {
-  width: 20px;
-  height: 20px;
+  width: 50px;
+  height: 50px;
   border-radius: 4px;
-  border: solid 2px black;
+  border: solid 4px black;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
 }
 
 #header-project > button {
-  background-color: #fee048;
   padding: 10px;
   font-size: 16px;
 }
@@ -165,8 +209,8 @@ main {
 
 .task-input-container > input {
   border: transparent;
-  border-bottom: 4px dashed grey;
-  
+  border-bottom: 4px dashed #d6d7da;
+  font-size: 16px;
   padding: 5px;
   flex-grow: 1;
   background-color: transparent;
@@ -178,36 +222,70 @@ main {
   border-bottom: 4px dashed black;
   padding: 5px;
   flex-grow: 1;
+  font-family: "Space Mono", monospace;
 }
 
 .task-input-container > input:focus-visible {
   outline: none;
 }
 
+.task-input-container > input::placeholder{
+  font-family: "Space Mono", monospace;
+  color: #999fba;
+  font-weight: 700;
+  font-size: 16px;
+}
 
-#tasks-container {
-  display: "flex";
-  flex-direction: "column";
-  gap: 10px;
-  padding: 15px;
+.task-input-container > button{
+  font-size: 16px;
+  padding: 8px 24px;
+}
+
+.tasks-section {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
 }
 
 .task {
-  display: "flex";
-  align-items: "center";
-  justify-content: "space-between";
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 2vw;
+  font-weight: 700;
   background-color: #f4f4f4;
-  padding: 10px;
+  padding: 16px;
   border-radius: 8px;
   border: solid 4px black;
-  width: 250px;
+  rotate: -0.2deg;
 }
 
 .task > p {
   margin: 0;
   flex-grow: 1;
+  font-size: 18px;
 }
 
 .task > span {
-  cursor: "pointer";
+  cursor: pointer;
+}
+
+.task-status,.delete-button{
+  padding: 5px;
+  box-shadow: none;
+}
+
+.delete-button {
+  display: none;
+}
+
+.task:hover .delete-button {
+  display: inline-block;
+  background-color: #f26d6f;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
 }

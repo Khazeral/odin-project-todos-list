@@ -1,5 +1,4 @@
 const container = document.querySelector("main");
-
 export const createProject = (project) => {
     const node = document.createElement("div");
     node.className = "project-menu";
@@ -33,9 +32,12 @@ export const createProjectWorkspace = (project) => {
     projectTitle.textContent = project.title;
 
     const addProjectButton = document.createElement("button");
-    addProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> Nouveau projet';
+    addProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> New project';
 
-    header.append(colorSquare, projectTitle, addProjectButton);
+    const editProjectButton = document.createElement("button");
+    editProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> Edit project';
+
+    header.append(colorSquare, projectTitle, addProjectButton, editProjectButton);
     container.append(header);
 
     const taskInputContainer = document.createElement("div");
@@ -45,7 +47,7 @@ export const createProjectWorkspace = (project) => {
     taskInput.placeholder = "Ajouter une tâche...";
 
     const addTaskButton = document.createElement("button");
-    addTaskButton.textContent = "Ajouter";
+    addTaskButton.innerHTML = '<span class="mdi mdi-plus"></span> Add';
     addTaskButton.style.backgroundColor = "#8ec4ff";
 
     taskInputContainer.append(taskInput, addTaskButton);
@@ -56,30 +58,45 @@ export const createProjectWorkspace = (project) => {
 
     const tasksToCompleteContainer = document.createElement("div");
     tasksToCompleteContainer.className = "task-list";
-    tasksToCompleteContainer.innerHTML = `<h2>A compléter (${project.tasks.filter((e) => e.completed === false).length}) </h2>`;
+
+    const toCompleteTitle = document.createElement("h2");
+    tasksToCompleteContainer.appendChild(toCompleteTitle);
 
     const completedTasksContainer = document.createElement("div");
     completedTasksContainer.className = "task-list";
-    completedTasksContainer.innerHTML = `<h2>Terminées (${project.tasks.filter((e) => e.completed === true).length}) </h2>`;
+
+    const completedTitle = document.createElement("h2");
+    completedTasksContainer.appendChild(completedTitle);
 
     tasksSection.append(tasksToCompleteContainer, completedTasksContainer);
     container.append(tasksSection);
 
+    function updateTaskCounters() {
+        const toCompleteCount = tasksToCompleteContainer.querySelectorAll(".task").length;
+        const completedCount = completedTasksContainer.querySelectorAll(".task").length;
+        toCompleteTitle.textContent = `A compléter (${toCompleteCount})`;
+        completedTitle.textContent = `Terminées (${completedCount})`;
+    }
+
     project.tasks.forEach((task) => {
-        createTask(task.title, task.completed, tasksToCompleteContainer, completedTasksContainer);
+        createTask(task.title, task.completed, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
     });
+
+    updateTaskCounters();
 
     addTaskButton.addEventListener("click", () => {
         if (taskInput.value.trim() !== "") {
-            createTask(taskInput.value, false, tasksToCompleteContainer, completedTasksContainer);
+            createTask(taskInput.value, false, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
             taskInput.value = ""; 
+            updateTaskCounters();
         }
     });
 };
 
-function createTask(title, isCompleted, toCompleteContainer, completedContainer) {
+function createTask(title, isCompleted, toCompleteContainer, completedContainer, updateCounters) {
     const task = document.createElement("div");
     task.className = "task";
+
     if (isCompleted) {
         task.classList.add("completed");
     }
@@ -89,25 +106,30 @@ function createTask(title, isCompleted, toCompleteContainer, completedContainer)
 
     const taskStatus = document.createElement("button");
     taskStatus.className = "task-status";
-    taskStatus.textContent = isCompleted ? "🔄" : "✔️";
+    updateStatusButton(taskStatus, isCompleted);
 
     const deleteButton = document.createElement("button");
-    deleteButton.textContent = "🗑️";
+    deleteButton.innerHTML = '<span class="mdi mdi-trash-can-outline"></span>';
     deleteButton.className = "delete-button";
 
     taskStatus.addEventListener("click", () => {
+        const currentlyCompleted = task.classList.contains("completed");
         task.classList.toggle("completed");
-        if (taskStatus.textContent === "✔️") {
-            taskStatus.textContent = "🔄";
+
+        updateStatusButton(taskStatus, !currentlyCompleted);
+
+        if (task.classList.contains("completed")) {
             completedContainer.appendChild(task);
         } else {
-            taskStatus.textContent = "✔️";
             toCompleteContainer.appendChild(task);
         }
+
+        updateCounters();
     });
 
     deleteButton.addEventListener("click", () => {
         task.remove();
+        updateCounters();
     });
 
     task.append(taskStatus, taskTitle, deleteButton);
@@ -117,4 +139,16 @@ function createTask(title, isCompleted, toCompleteContainer, completedContainer)
     } else {
         toCompleteContainer.appendChild(task);
     }
+
+    updateCounters();
 }
+
+function updateStatusButton(button, isCompleted) {
+    if (isCompleted) {
+        button.innerHTML = '<span class="mdi mdi-check"></span>';
+        button.style.backgroundColor = "#47df84"
+    } else {
+        button.innerHTML = '<span class="mdi mdi-clock-outline"></span>';
+    }
+}
+
