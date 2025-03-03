@@ -1,4 +1,6 @@
 const container = document.querySelector("main");
+
+
 export const createProject = (project) => {
     const node = document.createElement("div");
     node.className = "project-menu";
@@ -149,6 +151,16 @@ function updateStatusButton(button, isCompleted) {
         button.style.backgroundColor = "#47df84"
     } else {
         button.innerHTML = '<span class="mdi mdi-clock-outline"></span>';
+        button.style.backgroundColor = "transparent"
     }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("toggle-button");
+    const sidebar = document.querySelector("aside");
+
+    toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+        console.log("Classes actuelles :", sidebar.classList);
+    });
+});
