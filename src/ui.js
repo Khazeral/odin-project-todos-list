@@ -112,7 +112,6 @@ export const createProjectWorkspace = (project, projectManager) => {
 const createTask = (project, taskObj, toCompleteContainer, completedContainer, updateCounters, projectManager) => {
     const task = document.createElement("div");
     task.className = "task";
-    console.log(" YAHOU : ", taskObj)
     if (taskObj.completed) {
         task.classList.add("completed");
     }
@@ -129,7 +128,6 @@ const createTask = (project, taskObj, toCompleteContainer, completedContainer, u
     deleteButton.className = "delete-button";
 
     taskStatus.addEventListener("click", () => {
-        console.log("CACA : ",taskObj)
         taskObj.completed = !taskObj.completed;
         task.classList.toggle("completed");
         updateStatusButton(taskStatus, taskObj.completed);
