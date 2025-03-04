@@ -177,13 +177,11 @@ export const createProjectModal = () => {
     const modal = document.createElement("dialog");
     modal.classList.add("modal-container");
 
-    // Fermer la modale proprement
     const closeModal = () => {
         modal.close();
-        modal.remove(); // Supprime la modale du DOM après fermeture
+        modal.remove();
     };
 
-    // Header
     const header = document.createElement("div");
     header.classList.add("modal-header");
 
@@ -198,11 +196,9 @@ export const createProjectModal = () => {
     header.appendChild(title);
     header.appendChild(closeButton);
 
-    // Contenu de la modale
     const content = document.createElement("div");
     content.classList.add("modal-content");
 
-    // Champ "Nom du projet"
     const nameField = document.createElement("div");
     nameField.classList.add("modal-field");
 
@@ -220,7 +216,6 @@ export const createProjectModal = () => {
     nameField.appendChild(nameLabel);
     nameField.appendChild(nameInput);
 
-    // Sélecteur de couleur
     const colorField = document.createElement("div");
     colorField.classList.add("modal-field");
 
@@ -255,7 +250,6 @@ export const createProjectModal = () => {
     colorField.appendChild(colorLabel);
     colorField.appendChild(colorSelect);
 
-    // Footer avec boutons
     const footer = document.createElement("div");
     footer.classList.add("modal-footer");
 
@@ -278,7 +272,7 @@ export const createProjectModal = () => {
             return;
         }
 
-        // Envoie l'événement avec les données
+
         document.dispatchEvent(new CustomEvent("projectAdded", {
             detail: { projectName, projectColor }
         }));
@@ -289,7 +283,6 @@ export const createProjectModal = () => {
     footer.appendChild(cancelButton);
     footer.appendChild(submitButton);
 
-    // Ajout des éléments dans la modale
     content.appendChild(nameField);
     content.appendChild(colorField);
     modal.appendChild(header);
@@ -297,7 +290,7 @@ export const createProjectModal = () => {
     modal.appendChild(footer);
 
     document.body.appendChild(modal);
-    modal.showModal(); // Affichage correct
+    modal.showModal();
 };
 
 
