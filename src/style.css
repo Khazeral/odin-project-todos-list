@@ -75,11 +75,17 @@ aside.collapsed .color-square {
 }
 
 aside > header {
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px 25px;
   border-bottom: solid 7px black;
+}
+aside > nav {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
 }
 
 aside > header > button {
@@ -104,10 +110,16 @@ aside > header > button {
 #projects-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Aligne les éléments en haut */
   align-items: center;
   row-gap: 1.5vh;
   padding: 16px;
+
+  flex: 1; /* Permet d'occuper tout l'espace disponible */
+  overflow-y: scroll; /* Active le scroll uniquement si nécessaire */
+  overflow-x: hidden;/* E mpêche le scroll horizontal */
+  max-height: 80vh;
+  scrollbar-width: none;
 }
 
 .project-menu {
@@ -286,6 +298,10 @@ main {
   display: flex;
   flex-direction: column;
   row-gap: 15px;
+  max-height: 35vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scrollbar-width: none;
 }
 
 .modal-container {
