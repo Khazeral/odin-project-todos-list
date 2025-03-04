@@ -2,7 +2,7 @@ import { Task } from "./task";
 
 export class Project {
     constructor(title, color, tasks = []) {
-        this.id = Date.now();
+        this.id = this.id = crypto.randomUUID();
         this.title = title;
         this.color = color;
         this.tasks = tasks.map(t => new Task(t.title, t.completed));
