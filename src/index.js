@@ -25,7 +25,6 @@ const handleCurrentProject = (id) => {
 export const generateProjectsTab = () => {
     projectsContainer.innerHTML = ""; 
     const projects = projectManager.getAllProjects()
-    console.log(projects)
     if (projectsContainer) {
         projects.forEach((project) => {
             const projectNode = createProject(project);
@@ -55,10 +54,12 @@ document.addEventListener("projectAdded", (event) => {
         currentProject = newProject;
         createProjectWorkspace(currentProject, projectManager);
         generateProjectsTab()
+        projectManager.saveProjectsToLocalStorage()
     }
 });
 
 
 if (currentProject) {
-    createProjectWorkspace(currentProject, projectManager, generateProjectsTab);
+    createProjectWorkspace(currentProject, projectManager);
+    generateProjectsTab()
 }

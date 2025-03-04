@@ -41,7 +41,6 @@ export const createProjectWorkspace = (project, projectManager) => {
     deleteProjectButton.style.backgroundColor = "red"
 
     deleteProjectButton.addEventListener("click", () => {
-        console.log("🗑 Suppression de :", project);
         projectManager.removeProject(project); 
         container.innerHTML = ""; 
         generateProjectsTab()
@@ -88,8 +87,9 @@ export const createProjectWorkspace = (project, projectManager) => {
         completedTitle.textContent = `Terminées (${completedCount})`;
     }
 
+    console.log("c'est les tasks !!! : ", project.tasks)
     project.tasks.forEach((task) => {
-        createTask(task.title, task.completed, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
+        createTask(project,task, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
     });
 
     updateTaskCounters();
@@ -103,7 +103,7 @@ export const createProjectWorkspace = (project, projectManager) => {
             createTask(project, newTask, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
     
             taskInput.value = ""; 
-    
+            projectManager.saveProjectsToLocalStorage()
             updateTaskCounters();
         }
     });

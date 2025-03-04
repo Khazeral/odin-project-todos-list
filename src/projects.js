@@ -42,6 +42,8 @@ export class ProjectManager {
             return project;
         });
 
+        console.log("ALLLLLLLLLERRRRR : ", this.projects)
+
         return this.projects
 
     }
