@@ -87,20 +87,18 @@ export const createProjectWorkspace = (project, projectManager) => {
         completedTitle.textContent = `Terminées (${completedCount})`;
     }
 
-    console.log("c'est les tasks !!! : ", project.tasks)
     project.tasks.forEach((task) => {
-        createTask(project,task, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
+        createTask(project,task, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters, projectManager);
     });
 
     updateTaskCounters();
 
     addTaskButton.addEventListener("click", () => {
         if (taskInput.value.trim() !== "") {
-            const newTask = new Task(taskInput.value, project, false);
+            const newTask = new Task(taskInput.value, false);
     
             project.addTask(newTask);
-    
-            createTask(project, newTask, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
+            createTask(project, newTask, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters, projectManager);
     
             taskInput.value = ""; 
             projectManager.saveProjectsToLocalStorage()
@@ -111,10 +109,10 @@ export const createProjectWorkspace = (project, projectManager) => {
     
 };
 
-const createTask = (project, taskObj, toCompleteContainer, completedContainer, updateCounters) => {
+const createTask = (project, taskObj, toCompleteContainer, completedContainer, updateCounters, projectManager) => {
     const task = document.createElement("div");
     task.className = "task";
-
+    console.log(" YAHOU : ", taskObj)
     if (taskObj.completed) {
         task.classList.add("completed");
     }
@@ -131,10 +129,11 @@ const createTask = (project, taskObj, toCompleteContainer, completedContainer, u
     deleteButton.className = "delete-button";
 
     taskStatus.addEventListener("click", () => {
+        console.log("CACA : ",taskObj)
         taskObj.completed = !taskObj.completed;
         task.classList.toggle("completed");
-
         updateStatusButton(taskStatus, taskObj.completed);
+        projectManager.saveProjectsToLocalStorage()
 
         if (taskObj.completed) {
             completedContainer.appendChild(task);
@@ -148,12 +147,14 @@ const createTask = (project, taskObj, toCompleteContainer, completedContainer, u
     deleteButton.addEventListener("click", () => {
         project.removeTask(taskObj); 
         task.remove(); 
+        projectManager.saveProjectsToLocalStorage()
         updateCounters();
     });
 
     task.append(taskStatus, taskTitle, deleteButton);
 
     if (taskObj.completed) {
+
         completedContainer.appendChild(task);
     } else {
         toCompleteContainer.appendChild(task);

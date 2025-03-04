@@ -21,7 +21,6 @@ const handleCurrentProject = (id) => {
     }
 };
 
-
 export const generateProjectsTab = () => {
     projectsContainer.innerHTML = ""; 
     const projects = projectManager.getAllProjects()
