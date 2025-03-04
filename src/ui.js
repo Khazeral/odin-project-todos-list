@@ -1,5 +1,7 @@
-const container = document.querySelector("main");
+import { Task } from "./task";
+import { generateProjectsTab } from ".";
 
+const container = document.querySelector("main");
 
 export const createProject = (project) => {
     const node = document.createElement("div");
@@ -21,7 +23,8 @@ export const createProject = (project) => {
     return node;
 };
 
-export const createProjectWorkspace = (project) => {
+
+export const createProjectWorkspace = (project, projectManager) => {
     container.innerHTML = ""; 
 
     const header = document.createElement("header");
@@ -33,13 +36,18 @@ export const createProjectWorkspace = (project) => {
     const projectTitle = document.createElement("h1");
     projectTitle.textContent = project.title;
 
-    const addProjectButton = document.createElement("button");
-    addProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> New project';
+    const deleteProjectButton = document.createElement("button");
+    deleteProjectButton.innerHTML = 'Delete project';
+    deleteProjectButton.style.backgroundColor = "red"
 
-    const editProjectButton = document.createElement("button");
-    editProjectButton.innerHTML = '<span class="mdi mdi-plus"></span> Edit project';
+    deleteProjectButton.addEventListener("click", () => {
+        console.log("🗑 Suppression de :", project);
+        projectManager.removeProject(project); 
+        container.innerHTML = ""; 
+        generateProjectsTab()
+    });
 
-    header.append(colorSquare, projectTitle, addProjectButton, editProjectButton);
+    header.append(colorSquare, projectTitle , deleteProjectButton);
     container.append(header);
 
     const taskInputContainer = document.createElement("div");
@@ -88,39 +96,47 @@ export const createProjectWorkspace = (project) => {
 
     addTaskButton.addEventListener("click", () => {
         if (taskInput.value.trim() !== "") {
-            createTask(taskInput.value, false, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
+            const newTask = new Task(taskInput.value, project, false);
+    
+            project.addTask(newTask);
+    
+            createTask(project, newTask, tasksToCompleteContainer, completedTasksContainer, updateTaskCounters);
+    
             taskInput.value = ""; 
+    
             updateTaskCounters();
         }
     });
+    
+    
 };
 
-function createTask(title, isCompleted, toCompleteContainer, completedContainer, updateCounters) {
+const createTask = (project, taskObj, toCompleteContainer, completedContainer, updateCounters) => {
     const task = document.createElement("div");
     task.className = "task";
 
-    if (isCompleted) {
+    if (taskObj.completed) {
         task.classList.add("completed");
     }
 
     const taskTitle = document.createElement("p");
-    taskTitle.textContent = title;
+    taskTitle.textContent = taskObj.title;
 
     const taskStatus = document.createElement("button");
     taskStatus.className = "task-status";
-    updateStatusButton(taskStatus, isCompleted);
+    updateStatusButton(taskStatus, taskObj.completed);
 
     const deleteButton = document.createElement("button");
     deleteButton.innerHTML = '<span class="mdi mdi-trash-can-outline"></span>';
     deleteButton.className = "delete-button";
 
     taskStatus.addEventListener("click", () => {
-        const currentlyCompleted = task.classList.contains("completed");
+        taskObj.completed = !taskObj.completed;
         task.classList.toggle("completed");
 
-        updateStatusButton(taskStatus, !currentlyCompleted);
+        updateStatusButton(taskStatus, taskObj.completed);
 
-        if (task.classList.contains("completed")) {
+        if (taskObj.completed) {
             completedContainer.appendChild(task);
         } else {
             toCompleteContainer.appendChild(task);
@@ -130,22 +146,24 @@ function createTask(title, isCompleted, toCompleteContainer, completedContainer,
     });
 
     deleteButton.addEventListener("click", () => {
-        task.remove();
+        project.removeTask(taskObj); 
+        task.remove(); 
         updateCounters();
     });
 
     task.append(taskStatus, taskTitle, deleteButton);
 
-    if (isCompleted) {
+    if (taskObj.completed) {
         completedContainer.appendChild(task);
     } else {
         toCompleteContainer.appendChild(task);
     }
 
     updateCounters();
-}
+};
 
-function updateStatusButton(button, isCompleted) {
+
+const updateStatusButton = (button, isCompleted) =>{
     if (isCompleted) {
         button.innerHTML = '<span class="mdi mdi-check"></span>';
         button.style.backgroundColor = "#47df84"
@@ -155,12 +173,142 @@ function updateStatusButton(button, isCompleted) {
     }
 }
 
+export const createProjectModal = () => {
+    const modal = document.createElement("dialog");
+    modal.classList.add("modal-container");
+
+    // Fermer la modale proprement
+    const closeModal = () => {
+        modal.close();
+        modal.remove(); // Supprime la modale du DOM après fermeture
+    };
+
+    // Header
+    const header = document.createElement("div");
+    header.classList.add("modal-header");
+
+    const title = document.createElement("h2");
+    title.textContent = "Créer un projet";
+
+    const closeButton = document.createElement("button");
+    closeButton.classList.add("close-button");
+    closeButton.innerHTML = "×";
+    closeButton.addEventListener("click", closeModal);
+
+    header.appendChild(title);
+    header.appendChild(closeButton);
+
+    // Contenu de la modale
+    const content = document.createElement("div");
+    content.classList.add("modal-content");
+
+    // Champ "Nom du projet"
+    const nameField = document.createElement("div");
+    nameField.classList.add("modal-field");
+
+    const nameLabel = document.createElement("label");
+    nameLabel.textContent = "Nom du projet :";
+    nameLabel.setAttribute("for", "project-name");
+
+    const nameInput = document.createElement("input");
+    nameInput.id = "project-name";
+    nameInput.type = "text";
+    nameInput.placeholder = "Nom du projet";
+    nameInput.required = true;
+    nameInput.classList.add("modal-input");
+
+    nameField.appendChild(nameLabel);
+    nameField.appendChild(nameInput);
+
+    // Sélecteur de couleur
+    const colorField = document.createElement("div");
+    colorField.classList.add("modal-field");
+
+    const colorLabel = document.createElement("label");
+    colorLabel.textContent = "Couleur :";
+    colorLabel.setAttribute("for", "project-color");
+
+    const colorSelect = document.createElement("select");
+    colorSelect.id = "project-color";
+    colorSelect.classList.add("modal-select");
+
+    const colors = [
+        { name: "Rouge", value: "#FF0000" },
+        { name: "Vert", value: "#00FF00" },
+        { name: "Bleu", value: "#0000FF" },
+        { name: "Jaune", value: "#FFFF00" },
+        { name: "Orange", value: "#FFA500" },
+        { name: "Violet", value: "#800080" },
+        { name: "Rose", value: "#FFC0CB" },
+        { name: "Noir", value: "#000000" },
+        { name: "Blanc", value: "#FFFFFF" }
+    ];
+
+    colors.forEach(color => {
+        const option = document.createElement("option");
+        option.value = color.value;
+        option.textContent = color.name;
+        option.style.backgroundColor = color.value;
+        colorSelect.appendChild(option);
+    });
+
+    colorField.appendChild(colorLabel);
+    colorField.appendChild(colorSelect);
+
+    // Footer avec boutons
+    const footer = document.createElement("div");
+    footer.classList.add("modal-footer");
+
+    const cancelButton = document.createElement("button");
+    cancelButton.classList.add("modal-button", "cancel");
+    cancelButton.textContent = "Annuler";
+    cancelButton.addEventListener("click", closeModal);
+
+    const submitButton = document.createElement("button");
+    submitButton.id = "submit-project";
+    submitButton.classList.add("modal-button", "create");
+    submitButton.textContent = "Valider";
+
+    submitButton.addEventListener("click", () => {
+        const projectName = nameInput.value.trim();
+        const projectColor = colorSelect.value;
+
+        if (projectName === "") {
+            alert("Le nom du projet est requis !");
+            return;
+        }
+
+        // Envoie l'événement avec les données
+        document.dispatchEvent(new CustomEvent("projectAdded", {
+            detail: { projectName, projectColor }
+        }));
+
+        closeModal();
+    });
+
+    footer.appendChild(cancelButton);
+    footer.appendChild(submitButton);
+
+    // Ajout des éléments dans la modale
+    content.appendChild(nameField);
+    content.appendChild(colorField);
+    modal.appendChild(header);
+    modal.appendChild(content);
+    modal.appendChild(footer);
+
+    document.body.appendChild(modal);
+    modal.showModal(); // Affichage correct
+};
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
     const toggleBtn = document.getElementById("toggle-button");
     const sidebar = document.querySelector("aside");
 
     toggleBtn.addEventListener("click", () => {
         sidebar.classList.toggle("collapsed");
-        console.log("Classes actuelles :", sidebar.classList);
     });
 });
+
+

@@ -1,24 +1,28 @@
+import { Task } from "./task";
+
+
 export class Project {
-    static id = 0;
-    constructor(name) {
-        this.id = id
-        this.name = name;
-        this.todos = [];
+    constructor(title, color, tasks) {
+        this.id = Date.now();
+        this.color = color
+        this.title = title;
+        this.tasks = tasks;
     }
 
-    addTodo(todo) {
-        if (!(todo instanceof Todo)) {
-            throw new Error("Only Todo instances can be added.");
+    addTask(task) {
+        if (!(task instanceof Task)) {
+            throw new Error("Only Task instances can be added.");
         }
-        this.todos.push(todo);
+        this.tasks.push(task);
+    }
+    
+
+    removeTask(task) {
+        this.tasks = this.tasks.filter(t => t !== task);
     }
 
-    removeTodo(todo) {
-        this.todos = this.todos.filter(t => t !== todo);
-    }
-
-    getTodos() {
-        return this.todos;
+    getTasks() {
+        return this.tasks;
     }
 }
 
@@ -35,11 +39,11 @@ export class ProjectManager {
     }
 
     removeProject(project) {
-        this.projects = this.projects.filter(p => p !== project);
+        this.projects = this.projects.filter(p => p.id !== project.id);
     }
 
-    getProjectByName(name) {
-        return this.projects.find(p => p.name === name);
+    getProjectByName(title) {
+        return this.projects.find(p => p.title === title);
     }
 
     getAllProjects() {

@@ -32,12 +32,12 @@ aside {
 }
 
 aside.collapsed {
-  width: 80px !important;
+  width: 80px;
   transition: width 0.3s ease-in-out;
 }
 
 aside.collapsed h2,
-aside.collapsed #project-label {
+aside.collapsed #project-label > h3 {
   display: none;
 }
 
@@ -164,9 +164,8 @@ main {
   width: 100%;
   background-color: #f5f5f5;
   height: 100%;
-  padding: 2vw
+  padding: 2vw;
 }
-
 
 #header-project {
   display: flex;
@@ -213,7 +212,6 @@ main {
   padding: 5px;
   flex-grow: 1;
   background-color: transparent;
-
 }
 
 .task-input-container > input:focus {
@@ -228,14 +226,14 @@ main {
   outline: none;
 }
 
-.task-input-container > input::placeholder{
+.task-input-container > input::placeholder {
   font-family: "Space Mono", monospace;
   color: #999fba;
   font-weight: 700;
   font-size: 16px;
 }
 
-.task-input-container > button{
+.task-input-container > button {
   font-size: 16px;
   padding: 8px 24px;
 }
@@ -269,7 +267,8 @@ main {
   cursor: pointer;
 }
 
-.task-status,.delete-button{
+.task-status,
+.delete-button {
   padding: 5px;
   box-shadow: none;
 }
@@ -287,4 +286,104 @@ main {
   display: flex;
   flex-direction: column;
   row-gap: 15px;
+}
+
+/* Conteneur de la modale */
+.modal-container {
+  width: 420px;
+  padding: 24px;
+  background: white;
+  border: 2px solid #444;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* En-tête */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 12px;
+}
+
+/* Bouton de fermeture */
+.close-button {
+  background: none;
+  border: 2px solid #444;
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: bold;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-button:hover {
+  background: #eee;
+}
+
+/* Champs */
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Inputs et Sélecteur */
+.modal-input,
+.modal-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #666;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 2px solid #ddd;
+}
+
+/* Boutons */
+.modal-button {
+  padding: 12px 16px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Bouton Valider (vert) */
+.modal-button.create {
+  background: #4caf50;
+  color: white;
+  border: none;
+}
+
+.modal-button.create:hover {
+  background: #3d8c40;
+}
+
+/* Bouton Annuler (transparent avec bordure) */
+.modal-button.cancel {
+  background: transparent;
+  border: 2px solid #444;
+  color: #444;
+}
+
+.modal-button.cancel:hover {
+  background: #f0f0f0;
 }

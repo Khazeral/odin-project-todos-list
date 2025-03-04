@@ -1,85 +1,64 @@
 import "./style.css";
-import { createProject, createProjectWorkspace } from "./ui";
+import { createProject, createProjectWorkspace, createProjectModal } from "./ui";
+import { ProjectManager, Project } from "./projects";
 
 const projectsContainer = document.getElementById("projects-container");
+const openModalButton = document.querySelector("#project-label > button");
 
-const projects = [
-    {
-        id: 1,
-        title: "Refonte du site",
-        color: "red",
-        taskCount: 3,
-        tasks: [
-            { title: "Créer la maquette", completed: false },
-            { title: "Développer la page d'accueil", completed: true },
-            { title: "Optimiser le référencement", completed: false }
-        ]
-    },
-    {
-        id: 2,
-        title: "Application mobile",
-        color: "blue",
-        taskCount: 4,
-        tasks: [
-            { title: "Définir les fonctionnalités", completed: true },
-            { title: "Créer l'UI/UX", completed: false },
-            { title: "Développer l'authentification", completed: false },
-            { title: "Tester l'application", completed: false }
-        ]
-    },
-    {
-        id: 3,
-        title: "Stratégie marketing",
-        color: "green",
-        taskCount: 2,
-        tasks: [
-            { title: "Analyser le marché", completed: true },
-            { title: "Définir les cibles", completed: false }
-        ]
-    },
-    {
-        id: 4,
-        title: "Refactoring code",
-        color: "purple",
-        taskCount: 3,
-        tasks: [
-            { title: "Réorganiser les fichiers", completed: false },
-            { title: "Optimiser les performances", completed: true },
-            { title: "Corriger les bugs connus", completed: false }
-        ]
-    },
-    {
-        id: 5,
-        title: "Test unitaire",
-        color: "orange",
-        taskCount: 5,
-        tasks: [
-            { title: "Écrire les tests de base", completed: false },
-            { title: "Tester les erreurs", completed: true },
-            { title: "Automatiser les tests", completed: false },
-            { title: "Vérifier la couverture", completed: false },
-            { title: "Corriger les erreurs détectées", completed: false }
-        ]
-    }
-];
+const projectManager = new ProjectManager();
+const projects = projectManager.getAllProjects();
 
-let currentProject = projects[0];
+let currentProject = projects.length > 0 ? projects[0] : null;
 
 const handleCurrentProject = (id) => {
-    currentProject = projects.find(project => project.id === id);
-    createProjectWorkspace(currentProject);
+    const updatedProjects = projectManager.getAllProjects();
+    currentProject = updatedProjects.find(project => project.id === id);
+    
+    if (currentProject) {
+        createProjectWorkspace(currentProject, projectManager, generateProjectsTab);
+    } else {
+        console.error("Projet non trouvé !");
+    }
 };
 
-const generateProjectsTab = (projects) => {    
-    projects.forEach((project) => {
-        const projectNode = createProject(project);
-        projectNode.addEventListener("click", () => handleCurrentProject(project.id));
-        projectsContainer.append(projectNode);
-    });
+
+export const generateProjectsTab = () => {
+    projectsContainer.innerHTML = ""; 
+    const projects = projectManager.getAllProjects()
+    console.log(projects)
+    if (projectsContainer) {
+        projects.forEach((project) => {
+            const projectNode = createProject(project);
+            projectNode.addEventListener("click", () => handleCurrentProject(project.id));
+            projectsContainer.append(projectNode);
+        });
+    }
 };
 
+if (openModalButton) {
+    openModalButton.addEventListener("click", createProjectModal);
+} else {
+    console.error("Le bouton de modal est introuvable.");
+}
 
-generateProjectsTab(projects);
+document.addEventListener("projectAdded", (event) => {
+    const { projectName, projectColor } = event.detail;
 
-createProjectWorkspace(currentProject);
+    const newProject = new Project(projectName, projectColor, []);
+    projectManager.addProject(newProject);
 
+    const nodeNewProject = createProject(newProject);
+    nodeNewProject.addEventListener("click", () => handleCurrentProject(newProject.id));
+    projectsContainer.append(nodeNewProject);
+
+    if (!currentProject) {
+        currentProject = newProject;
+        createProjectWorkspace(currentProject, projectManager);
+        generateProjectsTab()
+    }
+});
+
+
+if (currentProject) {
+    createProjectWorkspace(currentProject, projectManager, generateProjectsTab);
+}
